@@ -2,4 +2,5 @@
 4 1 SE -> creare foglio su spreed sheet
 5 4 SE -> dividere user stries in task
 6 2 SE -> inserire celle
+8 8 ciao
 12 10 Rust -> Leggere obsidian (lezioni 1-3)
