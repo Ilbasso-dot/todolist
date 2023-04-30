@@ -53,10 +53,11 @@ fn main() {
             }
         }
         "-i" => {
+            let name = commands[4..].join(" ");
             let new = (
                 commands[2].parse::<i32>().unwrap(),
                 commands[3].parse::<i32>().unwrap(),
-                commands[4].as_str(),
+                name.as_str(),
             );
             v.push(new);
             v.sort_by(|a, b| a.0.cmp(&b.0));
