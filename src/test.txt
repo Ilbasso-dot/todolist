@@ -1,7 +1,5 @@
-1 4 Ingegneria del software
-creare foglio su spreed sheet
-dividere user stries in task
-inserire celle
-
-2 10 Imparare Rust
-Leggere obsidian (lezioni 1-3)
+-1 2 Doccetta
+4 1 SE -> creare foglio su spreed sheet
+5 4 SE -> dividere user stries in task
+6 2 SE -> inserire celle
+12 10 Rust -> Leggere obsidian (lezioni 1-3)
