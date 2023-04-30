@@ -96,7 +96,7 @@ fn main() {
             let max_effort = commands[2].parse::<i32>().unwrap();
             let mut effort = 0;
             let mut i = 0;
-            while effort < max_effort {
+            while effort <= max_effort {
                 effort += v[i].1;
                 i += 1;
             }

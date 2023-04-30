@@ -1,4 +1,6 @@
 4 2 SE -> creare foglio su spreed sheet
 5 4 SE -> dividere user stries in task
 6 2 SE -> inserire celle
+8 0 scrivere Sabrina
+10 1 add mode to parse all argument when I want to use -i
 12 10 Rust -> Leggere obsidian (lezioni 1-3)
