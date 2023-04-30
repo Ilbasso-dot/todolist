@@ -8,6 +8,9 @@ fn help() {
     println!("\t-l\t List all tasks");
     println!("\t-i\t Add a new task");
     println!("\t-r\t Remove a task");
+    println!("\t-e\t Show all tasks that can be done in a given effort");
+    println!("\tkate\t Open todolist file with kate");
+    println!("\t-h\t Show this help");
 }
 
 fn write_file(v: &Vec<(i32, i32, &str)>) {
@@ -81,7 +84,36 @@ fn main() {
                 println!("{}) priority: {}, effort: {} =>  {}", n, i.0, i.1, i.2);
             }
         }
+        "-e" => {
+            if commands.len() < 3 {
+                let mut effort = 0;
+                for i in &v {
+                    effort += i.1;
+                }
+                println!("Total effort: {}", effort);
+                return;
+            }
+            let max_effort = commands[2].parse::<i32>().unwrap();
+            let mut effort = 0;
+            let mut i = 0;
+            while effort < max_effort {
+                effort += v[i].1;
+                i += 1;
+            }
+            // print which task can be done
+            for j in 0..i - 1 {
+                let k = v[j];
+                println!("{}) priority: {}, effort: {} =>  {}", j, k.0, k.1, k.2);
+            }
+        }
         "-h" => help(),
+        "kate" => {
+            // opening kate from command line
+            std::process::Command::new("kate")
+                .arg("/home/ilbasso/Documents/myscript/todolist/src/test.txt")
+                .spawn()
+                .expect("kate command failed to start");
+        }
         _ => {}
     }
 
