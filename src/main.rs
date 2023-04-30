@@ -69,6 +69,9 @@ fn main() {
                 if index < v.len() as i32 {
                     v.remove(index as usize);
                     write_file(&v);
+                    for (n, i) in v.iter().enumerate() {
+                        println!("{}) priority: {}, effort: {} =>  {}", n, i.0, i.1, i.2);
+                    }
                     return;
                 }
             }
