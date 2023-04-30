@@ -1,0 +1,7 @@
+1 4 Ingegneria del software
+creare foglio su spreed sheet
+dividere user stries in task
+inserire celle
+
+2 10 Imparare Rust
+Leggere obsidian (lezioni 1-3)
