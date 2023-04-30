@@ -24,7 +24,7 @@ fn write_file(v: &Vec<(i32, i32, &str)>) {
 }
 
 fn main() {
-    let args = std::env::args();
+    let args: std::env::Args = std::env::args();
 
     let commands: Vec<String> = args.collect();
     let binding =
@@ -49,7 +49,7 @@ fn main() {
         "-l" => {
             v.sort_by(|a, b| a.0.cmp(&b.0));
             for (n, i) in v.iter().enumerate() {
-                println!("{}) priority: {}, effort: {} =>  {}", n, i.0, i.1, i.2);
+                println!("{})  priority: {}, \teffort: {}\t=>  {}", n, i.0, i.1, i.2);
             }
         }
         "-i" => {
@@ -62,7 +62,7 @@ fn main() {
             v.sort_by(|a, b| a.0.cmp(&b.0));
             write_file(&v);
             for (n, i) in v.iter().enumerate() {
-                println!("{}) priority: {}, effort: {} =>  {}", n, i.0, i.1, i.2);
+                println!("{})  priority: {}, \teffort: {}\t=>  {}", n, i.0, i.1, i.2);
             }
         }
         "-r" => {
@@ -73,7 +73,7 @@ fn main() {
                     v.remove(index as usize);
                     write_file(&v);
                     for (n, i) in v.iter().enumerate() {
-                        println!("{}) priority: {}, effort: {} =>  {}", n, i.0, i.1, i.2);
+                        println!("{})  priority: {}, \teffort: {}\t=>  {}", n, i.0, i.1, i.2);
                     }
                     return;
                 }
@@ -81,7 +81,7 @@ fn main() {
             v.remove(0);
             write_file(&v);
             for (n, i) in v.iter().enumerate() {
-                println!("{}) priority: {}, effort: {} =>  {}", n, i.0, i.1, i.2);
+                println!("{})  priority: {}, \teffort: {}\t=>  {}", n, i.0, i.1, i.2);
             }
         }
         "-e" => {
@@ -103,7 +103,7 @@ fn main() {
             // print which task can be done
             for j in 0..i - 1 {
                 let k = v[j];
-                println!("{}) priority: {}, effort: {} =>  {}", j, k.0, k.1, k.2);
+                println!("{})  priority: {}, \teffort: {}\t=>  {}", j, k.0, k.1, k.2);
             }
         }
         "-h" => help(),

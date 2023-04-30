@@ -1,6 +1,7 @@
-4 2 SE -> creare foglio su spreed sheet
-5 4 SE -> dividere user stries in task
-6 2 SE -> inserire celle
 8 0 scrivere Sabrina
 10 1 add mode to parse all argument when I want to use -i
 12 10 Rust -> Leggere obsidian (lezioni 1-3)
+13 1 Scrivere su Reddit per Rust projects
+15 5 Compilatori => PROPRIETÀ DEI LINGUAGGI LIBERI, vedere esercizi
+17 15 Compilatori => Linguaggi regolari e introduzione agli automi a stati finiti
+30 25 Rust tutorial youtube
