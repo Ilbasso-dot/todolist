@@ -1,4 +1,5 @@
 use std::fs;
+use std::path::PathBuf;
 
 // help function
 fn help() {
@@ -12,9 +13,12 @@ fn help() {
     println!("\t-h\t Show this help");
 }
 
+// read and parse file
 fn read_file() -> Vec<(i32, i32, String)> {
+    let file_path = PathBuf::from("./src/test.txt");
+    let file_path = fs::canonicalize(&file_path).unwrap();
     let binding =
-        fs::read_to_string("/home/ilbasso/Documents/myscript/todolist/src/test.txt").unwrap();
+        fs::read_to_string(file_path).unwrap();
     let s: Vec<String> = binding.split('\n').map(|s: &str| String::from(s)).collect();
     let mut v: Vec<(i32, i32, String)> = Vec::new();
     for i in s {
@@ -29,16 +33,20 @@ fn read_file() -> Vec<(i32, i32, String)> {
     v
 }
 
+// write file
 fn write_file(v: &Vec<(i32, i32, &str)>) {
+    let file_path = PathBuf::from("./src/test.txt");
+    let file_path = fs::canonicalize(&file_path).unwrap();
     let mut s = String::new();
     for i in v {
         s.push_str(&format!("{} {} {}\n", i.0, i.1, i.2));
     }
     s.pop();
-    std::fs::write("/home/ilbasso/Documents/myscript/todolist/src/test.txt", s)
+    std::fs::write(file_path, s)
         .expect("Unable to write file");
 }
 
+// print all tasks
 fn print_all(v: &Vec<(i32, i32, &str)>) {
     for (n, i) in v.iter().enumerate() {
         println!("{})  priority: {}, \teffort: {}\t=>  {}", n, i.0, i.1, i.2);
@@ -56,6 +64,7 @@ fn main() {
 
     match commands[1].as_str() {
         "-l" => {
+            // -l           -> list all tasks
             v.sort_by(|a, b| {
                 if a.0 == b.0 {
                     a.1.cmp(&b.1)
@@ -66,8 +75,9 @@ fn main() {
             print_all(&v);
         }
         "-i" => {
+            // -i [priority] [effort] [name]    -> add a new task
             let name = commands[4..].join(" ");
-            let new = (
+            let new: (i32, i32, &str) = (
                 commands[2].parse::<i32>().unwrap(),
                 commands[3].parse::<i32>().unwrap(),
                 name.as_str(),
@@ -84,52 +94,52 @@ fn main() {
             print_all(&v);
         }
         "-r" => {
-            // if commands[2] exists, parse to int and remove it
+            // -r           -> remove first task
+            // -r [index]   -> remove task at index
             if commands.len() > 2 {
                 let index = commands[2].parse::<i32>().unwrap();
                 if index < v.len() as i32 {
                     v.remove(index as usize);
-                    write_file(&v);
-                    print_all(&v);
-                    return;
+                } else {
+                    println!("Invalid index");
                 }
+            } else {
+                v.remove(0);
             }
-            v.remove(0);
             write_file(&v);
             print_all(&v);
         }
         "-e" => {
+            // -e           -> sum all effort
+            // -e [effort]  -> show all tasks that can be done in a given effort
             if commands.len() < 3 {
                 let mut effort = 0;
                 for i in &v {
                     effort += i.1;
                 }
                 println!("Total effort: {}", effort);
-                return;
-            }
-            let max_effort = commands[2].parse::<i32>().unwrap();
-            let mut effort = 0;
-            let mut i = 0;
-            while effort <= max_effort {
-                effort += v[i].1;
-                i += 1;
-            }
-            // print which task can be done
-            for j in 0..i - 1 {
-                let k = v[j];
-                println!("{})  priority: {}, \teffort: {}\t=>  {}", j, k.0, k.1, k.2);
+            } else {
+                let max_effort = commands[2].parse::<i32>().unwrap();
+                let mut effort = 0;
+                let mut i = 0;
+                while effort <= max_effort {
+                    effort += v[i].1;
+                    i += 1;
+                }
+                for j in 0..i - 1 {
+                    let k = v[j];
+                    println!("{})  priority: {}, \teffort: {}\t=>  {}", j, k.0, k.1, k.2);
+                }
             }
         }
         "-h" => help(),
         "kate" => {
-            // opening kate from command line
+            // kate         -> open todolist file with kate
             std::process::Command::new("kate")
                 .arg("/home/ilbasso/Documents/myscript/todolist/src/test.txt")
                 .spawn()
                 .expect("kate command failed to start");
         }
-        _ => {}
+        _ => println!("Invalid command"),
     }
-
-    // print v
 }
