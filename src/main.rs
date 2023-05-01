@@ -4,13 +4,29 @@ use std::fs;
 fn help() {
     println!("Usage: todolist [OPTION] [ARGUMENTS]");
     println!("Options:");
-    // write all options
     println!("\t-l\t List all tasks");
     println!("\t-i\t Add a new task");
     println!("\t-r\t Remove a task");
     println!("\t-e\t Show all tasks that can be done in a given effort");
     println!("\tkate\t Open todolist file with kate");
     println!("\t-h\t Show this help");
+}
+
+fn read_file() -> Vec<(i32, i32, String)> {
+    let binding =
+        fs::read_to_string("/home/ilbasso/Documents/myscript/todolist/src/test.txt").unwrap();
+    let s: Vec<String> = binding.split('\n').map(|s: &str| String::from(s)).collect();
+    let mut v: Vec<(i32, i32, String)> = Vec::new();
+    for i in s {
+        let mut first = i.splitn(3, ' ');
+        let first: (i32, i32, String) = (
+            first.next().unwrap().parse::<i32>().unwrap(),
+            first.next().unwrap().parse::<i32>().unwrap(),
+            String::from(first.next().unwrap()),
+        );
+        v.append(&mut vec![first]);
+    }
+    v
 }
 
 fn write_file(v: &Vec<(i32, i32, &str)>) {
@@ -23,34 +39,31 @@ fn write_file(v: &Vec<(i32, i32, &str)>) {
         .expect("Unable to write file");
 }
 
-fn main() {
-    let args: std::env::Args = std::env::args();
-
-    let commands: Vec<String> = args.collect();
-    let binding =
-        fs::read_to_string("/home/ilbasso/Documents/myscript/todolist/src/test.txt").unwrap();
-    let s: Vec<&str> = binding.as_str().split('\n').collect();
-    // commands now contains all args after the executable name
-    // println!("Args: {:?}", commands);
-
-    let mut v: Vec<(i32, i32, &str)> = Vec::new();
-
-    for i in s {
-        let mut first = i.splitn(3, ' ');
-        let first: (i32, i32, &str) = (
-            first.next().unwrap().parse::<i32>().unwrap(),
-            first.next().unwrap().parse::<i32>().unwrap(),
-            first.next().unwrap(),
-        );
-        v.append(&mut vec![first]);
+fn print_all(v: &Vec<(i32, i32, &str)>) {
+    for (n, i) in v.iter().enumerate() {
+        println!("{})  priority: {}, \teffort: {}\t=>  {}", n, i.0, i.1, i.2);
     }
+}
+
+fn main() {
+    // commands parser
+    let args: std::env::Args = std::env::args();
+    let commands: Vec<String> = args.collect();
+
+    // read file
+    let v: Vec<(i32, i32, String)> = read_file();
+    let mut v: Vec<(i32, i32, &str)> = v.iter().map(|(a, b, c)| (*a, *b, c.as_str())).collect();
 
     match commands[1].as_str() {
         "-l" => {
-            v.sort_by(|a, b| a.0.cmp(&b.0));
-            for (n, i) in v.iter().enumerate() {
-                println!("{})  priority: {}, \teffort: {}\t=>  {}", n, i.0, i.1, i.2);
-            }
+            v.sort_by(|a, b| {
+                if a.0 == b.0 {
+                    a.1.cmp(&b.1)
+                } else {
+                    a.0.cmp(&b.0)
+                }
+            });
+            print_all(&v);
         }
         "-i" => {
             let name = commands[4..].join(" ");
@@ -60,11 +73,15 @@ fn main() {
                 name.as_str(),
             );
             v.push(new);
-            v.sort_by(|a, b| a.0.cmp(&b.0));
+            v.sort_by(|a, b| {
+                if a.0 == b.0 {
+                    a.1.cmp(&b.1)
+                } else {
+                    a.0.cmp(&b.0)
+                }
+            });
             write_file(&v);
-            for (n, i) in v.iter().enumerate() {
-                println!("{})  priority: {}, \teffort: {}\t=>  {}", n, i.0, i.1, i.2);
-            }
+            print_all(&v);
         }
         "-r" => {
             // if commands[2] exists, parse to int and remove it
@@ -73,17 +90,13 @@ fn main() {
                 if index < v.len() as i32 {
                     v.remove(index as usize);
                     write_file(&v);
-                    for (n, i) in v.iter().enumerate() {
-                        println!("{})  priority: {}, \teffort: {}\t=>  {}", n, i.0, i.1, i.2);
-                    }
+                    print_all(&v);
                     return;
                 }
             }
             v.remove(0);
             write_file(&v);
-            for (n, i) in v.iter().enumerate() {
-                println!("{})  priority: {}, \teffort: {}\t=>  {}", n, i.0, i.1, i.2);
-            }
+            print_all(&v);
         }
         "-e" => {
             if commands.len() < 3 {
