@@ -1,7 +1,8 @@
 use std::fs;
-use std::path::PathBuf;
+// use std::path::PathBuf;
+//let file_path = dotenv::var("FILE_PATH").unwrap();
 
-// help function
+/// help function
 fn help() {
     println!("Usage: todolist [OPTION] [ARGUMENTS]");
     println!("Options:");
@@ -13,13 +14,11 @@ fn help() {
     println!("\t-h\t Show this help");
 }
 
-// read and parse file
+/// read and parse file
 fn read_file() -> Vec<(i32, i32, String)> {
-    let file_path = PathBuf::from("./src/test.txt");
-    let file_path = fs::canonicalize(&file_path).unwrap();
-    let binding =
-        fs::read_to_string(file_path).unwrap();
-    let s: Vec<String> = binding.split('\n').map(|s: &str| String::from(s)).collect();
+    let file_path = "/home/ilbasso/Documents/myscript/todolist/src/test.txt";
+    let binding = fs::read_to_string(file_path).unwrap();
+    let s: Vec<String> = binding.split('\n').map(String::from).collect();
     let mut v: Vec<(i32, i32, String)> = Vec::new();
     for i in s {
         let mut first = i.splitn(3, ' ');
@@ -33,21 +32,19 @@ fn read_file() -> Vec<(i32, i32, String)> {
     v
 }
 
-// write file
+/// write file
 fn write_file(v: &Vec<(i32, i32, &str)>) {
-    let file_path = PathBuf::from("./src/test.txt");
-    let file_path = fs::canonicalize(&file_path).unwrap();
+    let file_path = "/home/ilbasso/Documents/myscript/todolist/src/test.txt";
     let mut s = String::new();
     for i in v {
         s.push_str(&format!("{} {} {}\n", i.0, i.1, i.2));
     }
     s.pop();
-    std::fs::write(file_path, s)
-        .expect("Unable to write file");
+    std::fs::write(file_path, s).expect("Unable to write file");
 }
 
-// print all tasks
-fn print_all(v: &Vec<(i32, i32, &str)>) {
+/// print all tasks
+fn print_all(v: &[(i32, i32, &str)]) {
     for (n, i) in v.iter().enumerate() {
         println!("{})  priority: {}, \teffort: {}\t=>  {}", n, i.0, i.1, i.2);
     }
@@ -96,16 +93,34 @@ fn main() {
         "-r" => {
             // -r           -> remove first task
             // -r [index]   -> remove task at index
-            if commands.len() > 2 {
-                let index = commands[2].parse::<i32>().unwrap();
-                if index < v.len() as i32 {
-                    v.remove(index as usize);
-                } else {
-                    println!("Invalid index");
+            // -r [index] [index] ... -> remove tasks at index
+            match commands.len() {
+                n if n < 2 => {
+                    println!("Invalid command");
                 }
-            } else {
-                v.remove(0);
+                2 => {
+                    v.remove(0);
+                }
+                3 => {
+                    let index = commands[2].parse::<i32>().unwrap();
+                    if index < v.len() as i32 {
+                        v.remove(index as usize);
+                    } else {
+                        println!("Invalid index");
+                    }
+                }
+                _ => {
+                    for i in &commands[2..] {
+                        let index = i.parse::<i32>().unwrap();
+                        if index < v.len() as i32 {
+                            v.remove(index as usize);
+                        } else {
+                            println!("Invalid index");
+                        }
+                    }
+                }
             }
+            
             write_file(&v);
             print_all(&v);
         }
@@ -126,8 +141,7 @@ fn main() {
                     effort += v[i].1;
                     i += 1;
                 }
-                for j in 0..i - 1 {
-                    let k = v[j];
+                for (j, k) in v.iter().enumerate().take(i - 1) {
                     println!("{})  priority: {}, \teffort: {}\t=>  {}", j, k.0, k.1, k.2);
                 }
             }
@@ -135,8 +149,9 @@ fn main() {
         "-h" => help(),
         "kate" => {
             // kate         -> open todolist file with kate
+            let file_path = "/home/ilbasso/Documents/myscript/todolist/src/test.txt";
             std::process::Command::new("kate")
-                .arg("/home/ilbasso/Documents/myscript/todolist/src/test.txt")
+                .arg(file_path)
                 .spawn()
                 .expect("kate command failed to start");
         }
