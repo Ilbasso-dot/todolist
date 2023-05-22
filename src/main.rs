@@ -1,6 +1,14 @@
-use std::fs;
-// use std::path::PathBuf;
-//let file_path = dotenv::var("FILE_PATH").unwrap();
+use std::path::PathBuf;
+use std::{env, fs};
+
+fn get_path() -> PathBuf {
+    let mut path = env::current_exe().unwrap();
+    path.pop();
+    path.pop();
+    path.pop();
+    path.push("src/test.txt");
+    path
+}
 
 /// help function
 fn help() {
@@ -16,7 +24,7 @@ fn help() {
 
 /// read and parse file
 fn read_file() -> Vec<(i32, i32, String)> {
-    let file_path = "/home/ilbasso/Documents/myscript/todolist/src/test.txt";
+    let file_path = get_path();
     let binding = fs::read_to_string(file_path).unwrap();
     let s: Vec<String> = binding.split('\n').map(String::from).collect();
     let mut v: Vec<(i32, i32, String)> = Vec::new();
@@ -34,7 +42,7 @@ fn read_file() -> Vec<(i32, i32, String)> {
 
 /// write file
 fn write_file(v: &Vec<(i32, i32, &str)>) {
-    let file_path = "/home/ilbasso/Documents/myscript/todolist/src/test.txt";
+    let file_path = get_path();
     let mut s = String::new();
     for i in v {
         s.push_str(&format!("{} {} {}\n", i.0, i.1, i.2));
@@ -120,7 +128,7 @@ fn main() {
                     }
                 }
             }
-            
+
             write_file(&v);
             print_all(&v);
         }
